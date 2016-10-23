@@ -21,7 +21,7 @@ Semaforo::Semaforo(int ValorInicial = 0 ){
 	if(id != 1){
       	/* Initialize the semaphore. */
         sbuf.sem_num = 0;
-        sbuf.sem_op = 2;  /* This is the number of runs
+        sbuf.sem_op = ValorInicial;  /* This is the number of runs
                              without queuing. */
         sbuf.sem_flg = 0;
         if (semop(semid, &sbuf, 1) == -1) {
@@ -39,17 +39,13 @@ Semaforo::Semaforo(int ValorInicial = 0 ){
 }
 
 Semaforo::Wait() {
-	this.ValorInicial--;
-	if (this.ValorInicial < 0) {
-		this.Cola.push(process);
-		block();
+	while(this.ValorInicial == 0) {
+		block(process);
 	}
+	this.ValorInicial--;
 }
 
 Semaforo::Signal() {
+	wakeup(process);
 	this.ValorInicial++;
-	if (this.ValorInicial <= 0) {
-		this.Cola.pop(process);
-		wakeup(process);
-	}
 }
