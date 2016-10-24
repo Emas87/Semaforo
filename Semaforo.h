@@ -1,7 +1,7 @@
 #define KEY 0xA12345	// Valor de la llave del recurso
 #include <sys/types.h>
 #include <sys/ipc.h>
-#include <sys/sem.h>
+#include <sys/semaphore.h>
 #include <iostream.h>
 #include <errno.h>
 
@@ -17,19 +17,21 @@ class Semaforo {
 
 Semaforo::Semaforo(int ValorInicial = 0 ){
 	id = semget(KEY,1, 0775 | IPC_CREAT);
-
+	semun init;
+	init.val = ValorInicial;
+	semctl(id, 1, SETVAL, init);
 	if(id != 1){
       	/* Initialize the semaphore. */
         sbuf.sem_num = 0;
         sbuf.sem_op = ValorInicial;  /* This is the number of runs
                              without queuing. */
         sbuf.sem_flg = 0;
-        if (semop(semid, &sbuf, 1) == -1) {
+        if (semop(id, &sbuf, 1) == -1) {
             perror("IPC error: semop"); exit(1);
         }
    	}
 	else if (errno == EEXIST) {
-        if ((semid = semget(semkey, 0, 0)) == -1) {
+        if ((id = semget(KEY, 0, 0)) == -1) {
             perror("IPC error 1: semget"); exit(1);
         }
     }
@@ -39,13 +41,19 @@ Semaforo::Semaforo(int ValorInicial = 0 ){
 }
 
 Semaforo::Wait() {
-	while(this.ValorInicial == 0) {
-		block(process);
+	sbuf.sem_num = 0;
+	sbuf.sem_op = -1;  /* This is the number of runs without queuing. */
+	sbuf.sem_flg = 0;
+	if (semop(id, &sbuf, 1) == -1) {
+		perror("IPC error: semop"); exit(1);
 	}
-	this.ValorInicial--;
 }
 
 Semaforo::Signal() {
-	wakeup(process);
-	this.ValorInicial++;
+	sbuf.sem_num = 0;
+	sbuf.sem_op = 1;  /* This is the number of runs without queuing. */
+	sbuf.sem_flg = 0;
+	if (semop(id, &sbuf, 1) == -1) {
+		perror("IPC error: semop"); exit(1);
+	}
 }
