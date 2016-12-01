@@ -7,10 +7,12 @@ int main() {
     int j;
 
     if ( fork() ) {
-       for (int i = 0; i < 10; i++ )
+       	for (int i = 0; i < 10; i++ ){
            printf( "Esperando para activar el semaforo %d \n", i );
-       scanf( "%j", &j );
-       s.Signal();
+	}
+       	scanf( "%d", &j );
+	exit(-1);
+       	s.Signal();
     }
     else {
        printf( "Esperando que el semaforo se active  ...\n" );

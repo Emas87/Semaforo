@@ -1,0 +1,14 @@
+# depslib dependency file v1.0
+1477442719 source:/home/ema/Semaforo/Semaforo/src/Semaforo.cpp
+	<stdio.h>
+	<unistd.h>
+	"Semaforo.h"
+
+1478300659 /home/ema/Semaforo/Semaforo/include/Semaforo.h
+	<sys/types.h>
+	<sys/ipc.h>
+	<sys/sem.h>
+	<iostream>
+	<cstdlib>
+	<errno.h>
+
